@@ -45,7 +45,6 @@
       font-size: 1.6rem;
     }
     p, li {
-      font-family: Garamond, Georgia, 'Times New Roman', Times, serif;
       font-size: 1.5rem;
       line-height: 1.5;
     }
@@ -102,11 +101,17 @@
       margin: 0 auto 0;
       padding-bottom: 40px;
     }
+    .footer {
+      color: var(--text-color);
+      font-size: 1.2rem;
+      padding: 20px 0 20px;
+    }
     .graph {
-      margin: 0px auto 300px;
+      min-height: 400px;
+    }
+    .graph-wrapper {
       border-top: 1px solid var(--border-color);
       border-bottom: 1px solid var(--border-color);
-      min-height: 400px;
     }
     .inbound-references {
       margin: 40px auto 0;
@@ -121,6 +126,7 @@
     }
     .inbound-references li {
       flex-basis: 30%;
+      max-width: 30%;
       flex-grow: 1;
       display: inline-block;
       border-top: 1px solid var(--border-color);
@@ -135,14 +141,15 @@
     }
     .wrapped {
       margin: 0 auto;
-      max-width: 880px;
+      max-width: 900px;
+      padding: 0 20px;
     }
   </style>
   <body>
     <div class="wrapped">
     <div class="header">
-      <a href="/"><span>val3rius.dev</span>/notes</a>
-      <small>on software and security</small>
+      <a href="/"><span>val3rius.dev</span>/</a>
+      <small>notes on software and security</small>
     </div>
  
     <div class="content">
@@ -161,7 +168,10 @@
     {% endif %}
  
   </div>
-  <div class="graph" id="cy"></div>
+  <div class="graph-wrapper">
+    <div class="graph" id="cy"></div>
+  </div>
+  <div class="footer wrapped">Made with Spade</div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.19.1/cytoscape.min.js" integrity="sha512-REr7ZKldLo2Lx6UiQ6autPWZR+j4u1/7ElYsrcwFe3ZmT/TKXCF/vXqNP/d2BQ78k0tapdZFccpFkku9bwrS3w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script type="text/javascript">
     var elements = {{ graph }};
@@ -188,7 +198,7 @@
             });
           });
           current_node.style({
-            'background-color': '#0000ff'
+            'background-color': '#3d3d3d'
           })
         },
         fit: true,
@@ -196,8 +206,8 @@
         nodeOverlap: 6,
         nodeRepulsion: 250,
         componentSpacing: 100,
-        nodeRepulsion: 400000,
-        edgeElasticity: 100,
+        nodeRepulsion: 500000,
+        edgeElasticity: 120,
         nestingFactor: 5,
         gravity: 80,
         numIter: 1000,
@@ -208,7 +218,7 @@
         {
           selector: 'edge',
           style: {
-            'line-color': '#ccc',
+            'line-color': '#ddd',
             'width': 1,
             'curve-style': 'bezier'
           }
@@ -228,13 +238,15 @@
             'text-background-color': '#fff',
             'background-color': '#ccc',
             'label': 'data(id)',
+            'width': '15px',
+            'height': '15px'
           }
         },
         {
           selector: 'node[id="{{ id }}"]',
           style: {
             'color': '#3d3d3d',
-            'background-color': '#0000ff',
+            'background-color': '#3d3d3d',
           }
         }
       ]

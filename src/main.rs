@@ -135,6 +135,7 @@ fn main() -> Result<(), error::Error> {
                 let mut comrak_opts = ComrakOptions::default();
                 comrak_opts.extension.tasklist = true;
                 comrak_opts.extension.table = true;
+                comrak_opts.render.unsafe_ = true;
                 article.content = markdown_to_html(&article.content, &comrak_opts);
 
                 //
