@@ -11,7 +11,6 @@ mod error;
 mod filesystem;
 mod links;
 mod meta;
-mod repository;
 mod traits;
 #[macro_use]
 extern crate lazy_static;
@@ -93,13 +92,25 @@ fn main() -> Result<(), error::Error> {
     // Load contents from the file system
     let src = filesystem::Filesystem::new(path::PathBuf::from(src_path));
     let dst = filesystem::Filesystem::new(path::PathBuf::from(dst_path));
-    let repo = repository::Repository::new(src.read_all()?);
+
+    let contents = src.read_all()?;
+    let references = contents
+        .iter()
+        .filter_map(|(_k, c)| match c {
+            Content::Article(a) => Some(a),
+            _ => None,
+        })
+        .fold(HashMap::new(), |mut m, a| {
+            let refs = links::extract(&contents, a);
+            m.insert(a.id.to_string(), refs);
+            m
+        });
 
     //
     // Traverse the contents again to write to file, now that
     // all internal links have been resolved.
     //
-    repo.contents.iter().for_each(|(id, content)| {
+    contents.iter().for_each(|(id, content)| {
         match content {
             //
             // For Markdown files, we pass the content to the templating engine,
@@ -109,7 +120,7 @@ fn main() -> Result<(), error::Error> {
                 //
                 // Resolve internal wikilinks and image links.
                 //
-                let mut article = links::replace(&repo, article).unwrap();
+                let mut article = links::replace(&contents, article).unwrap();
 
                 //
                 // Split out and parse the metadata YAML.
@@ -130,15 +141,14 @@ fn main() -> Result<(), error::Error> {
                 // Inbound references are the "backlinks" from other articles that get displayed
                 // at the bottom of each article (or wherever).
                 //
-                let inbound_references = repo.get_inbound_references(id).into_iter().fold(
-                    HashMap::new(),
-                    |mut m, id| {
-                        if let Some(referencing_article) = repo.get_article(&id) {
+                let inbound_references = content::get_inbound_references(&references, id)
+                    .into_iter()
+                    .fold(HashMap::new(), |mut m, id| {
+                        if let Some(referencing_article) = content::get_article(&contents, &id) {
                             m.insert(id, format!("/{}", referencing_article.permalink));
                         }
                         m
-                    },
-                );
+                    });
 
                 //
                 // Set up rendering context.
@@ -148,10 +158,7 @@ fn main() -> Result<(), error::Error> {
                 ctx.insert("meta", &article.meta);
                 ctx.insert("content", &article.content);
                 ctx.insert("inbound_references", &inbound_references);
-                ctx.insert(
-                    "graph",
-                    &content::cygate_graph(&repo.contents, &repo.reference_cache),
-                );
+                ctx.insert("graph", &content::json_graph(&contents, &references));
 
                 let rendered = renderer.render("default.html", &ctx).unwrap(); //TODO
 

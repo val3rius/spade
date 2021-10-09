@@ -1,5 +1,7 @@
-use crate::Article;
+use crate::content::{get_article, get_asset};
+use crate::{Article, Content};
 use regex::{Regex, RegexSet};
+use std::collections::HashMap;
 
 lazy_static! {
   static ref SET: RegexSet = RegexSet::new(&[
@@ -18,7 +20,7 @@ lazy_static! {
 }
 
 pub fn replace(
-  repo: &crate::repository::Repository,
+  contents: &HashMap<std::string::String, Content>,
   article: &Article,
 ) -> Result<Article, crate::error::Error> {
   let matches: Vec<_> = SET.matches(&article.content).into_iter().collect();
@@ -27,7 +29,7 @@ pub fn replace(
   // If there are image matches, replace them.
   if matches.contains(&0) {
     IMAGE.captures_iter(&article.content).for_each(|cap| {
-      if let Some(asset) = repo.get_asset(&cap[1]) {
+      if let Some(asset) = get_asset(contents, &cap[1]) {
         content = content.replace(
           &format!("![[{}]]", &cap[1]),
           &format!("![Image](/{})", asset.permalink),
@@ -39,7 +41,7 @@ pub fn replace(
   // Replace aliased links
   if matches.contains(&1) {
     ALIAS.captures_iter(&article.content).for_each(|cap| {
-      if let Some(article) = repo.get_article(&cap[1]) {
+      if let Some(article) = get_article(contents, &cap[1]) {
         content = content.replace(
           &format!("[[{}|{}]]", &cap[1], &cap[2]),
           &format!("[{}](/{})", &cap[2], article.permalink),
@@ -51,7 +53,7 @@ pub fn replace(
   // Replace normal links
   if matches.contains(&2) {
     NORMAL.captures_iter(&article.content).for_each(|cap| {
-      if let Some(article) = repo.get_article(&cap[1]) {
+      if let Some(article) = get_article(contents, &cap[1]) {
         content = content.replace(
           &format!("[[{}]]", &cap[1]),
           &format!("[{}](/{})", &cap[1], article.permalink),
@@ -66,14 +68,14 @@ pub fn replace(
   Ok(article)
 }
 
-pub fn extract(repo: &crate::repository::Repository, article: &Article) -> Vec<String> {
+pub fn extract(contents: &HashMap<String, Content>, article: &Article) -> Vec<String> {
   let matches: Vec<_> = SET.matches(&article.content).into_iter().collect();
   let mut links = vec![];
 
   // If there are image matches, replace them.
   if matches.contains(&0) {
     IMAGE.captures_iter(&article.content).for_each(|cap| {
-      if repo.get_asset(&cap[1]).is_some() {
+      if get_asset(contents, &cap[1]).is_some() {
         links.push(cap[1].to_string());
       }
     });
@@ -82,7 +84,7 @@ pub fn extract(repo: &crate::repository::Repository, article: &Article) -> Vec<S
   // Replace aliased links
   if matches.contains(&1) {
     ALIAS.captures_iter(&article.content).for_each(|cap| {
-      if repo.get_article(&cap[1]).is_some() {
+      if get_article(contents, &cap[1]).is_some() {
         links.push(cap[1].to_string());
       }
     });
@@ -91,7 +93,7 @@ pub fn extract(repo: &crate::repository::Repository, article: &Article) -> Vec<S
   // Replace normal links
   if matches.contains(&2) {
     NORMAL.captures_iter(&article.content).for_each(|cap| {
-      if repo.get_article(&cap[1]).is_some() {
+      if get_article(contents, &cap[1]).is_some() {
         links.push(cap[1].to_string());
       }
     });
