@@ -1,6 +1,31 @@
-use crate::{Article, Asset, Content};
+use crate::links;
+use crate::meta::Meta;
+use serde::Serialize;
 use serde_json::{Map, Value};
 use std::collections::HashMap;
+
+/// Content is any item of data that we want to move or process
+/// from our source to our destination.
+#[derive(Debug)]
+pub enum Content {
+  Article(Article),
+  Asset(Asset),
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct Article {
+  pub id: String,
+  pub permalink: String,
+  pub src: String,
+  pub meta: Option<Meta>,
+  pub content: String,
+}
+#[derive(Debug)]
+pub struct Asset {
+  pub id: String,
+  pub permalink: String,
+  pub src: String,
+}
 
 pub fn get_article<'a>(contents: &'a HashMap<String, Content>, id: &str) -> Option<&'a Article> {
   if let Some(Content::Article(article)) = contents.get(id) {
@@ -26,6 +51,20 @@ pub fn get_asset<'a>(contents: &'a HashMap<String, Content>, id: &str) -> Option
     }
   }
   None
+}
+
+pub fn get_references(contents: &HashMap<String, Content>) -> HashMap<String, Vec<String>> {
+  contents
+    .iter()
+    .filter_map(|(_k, c)| match c {
+      Content::Article(a) => Some(a),
+      _ => None,
+    })
+    .fold(HashMap::new(), |mut m, a| {
+      let refs = links::extract(contents, a);
+      m.insert(a.id.to_string(), refs);
+      m
+    })
 }
 
 pub fn get_inbound_references(refs: &HashMap<String, Vec<String>>, id: &str) -> Vec<String> {
@@ -65,10 +104,7 @@ pub fn json_graph(
     .iter()
     .flat_map(|(k, v)| {
       v.iter()
-        .filter_map(|id| match nodes.get(id) {
-          Some(Content::Article(_)) => Some(id),
-          _ => None,
-        })
+        .filter(|&id| matches!(nodes.get(id), Some(Content::Article(_))))
         .map(|inner_v| {
           let mut m = Map::new();
           let mut data = Map::new();

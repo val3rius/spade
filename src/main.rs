@@ -1,10 +1,12 @@
 use crate::traits::{Reader, Writer};
 use clap::{App, Arg};
 use comrak::{markdown_to_html, ComrakOptions};
-use meta::Meta;
-use serde::Serialize;
+use content::Content;
+use notify::{RecommendedWatcher, RecursiveMode, Watcher};
 use std::collections::HashMap;
 use std::path;
+use std::sync::mpsc::channel;
+use std::time::{Duration, Instant};
 use tera::Tera;
 mod content;
 mod error;
@@ -14,30 +16,6 @@ mod meta;
 mod traits;
 #[macro_use]
 extern crate lazy_static;
-
-/// Content is any item of data that we want to move or process
-/// from our source to our destination.
-#[derive(Debug)]
-pub enum Content {
-    Article(Article),
-    Asset(Asset),
-}
-
-#[derive(Clone, Debug, Serialize)]
-pub struct Article {
-    id: String,
-    permalink: String,
-    src: String,
-    meta: Option<Meta>,
-    content: String,
-}
-#[derive(Debug)]
-pub struct Asset {
-    id: String,
-    permalink: String,
-    src: String,
-}
-
 ///
 /// The core logic of the program is fairly minimal.
 /// We recursively read all files from our source folder.
@@ -72,6 +50,12 @@ fn main() -> Result<(), error::Error> {
                 .required(true)
                 .help("Sets the theme folder path"),
         )
+        .arg(
+            Arg::with_name("watch")
+                .short("w")
+                .long("watch")
+                .help("Re-generate the site whenever the source or theme directories change"),
+        )
         .get_matches();
 
     // These settings are all required, so let's bail early if they for some reason
@@ -82,6 +66,36 @@ fn main() -> Result<(), error::Error> {
         .expect("Invalid destination value");
     let theme_path = matches.value_of("theme").expect("Invalid theme path");
 
+    // 3, 2, 1, let's jam...!
+    generate_site(src_path, dst_path, theme_path)?;
+
+    // If the watch flag is set, we set up a notifier and loop indefinitely
+    // to re-generate the site whenever there are file changes in our
+    // source or theme directories.
+    if matches.is_present("watch") {
+        println!("Watching for changes...");
+        let (tx, rx) = channel();
+
+        let mut src_watcher: RecommendedWatcher = Watcher::new(tx.clone(), Duration::from_secs(1))?;
+        src_watcher.watch(src_path, RecursiveMode::Recursive)?;
+
+        let mut theme_watcher: RecommendedWatcher = Watcher::new(tx, Duration::from_secs(1))?;
+        theme_watcher.watch(theme_path, RecursiveMode::Recursive)?;
+
+        loop {
+            if let Ok(notify::DebouncedEvent::Write(_)) = rx.recv() {
+                generate_site(src_path, dst_path, theme_path)?;
+            }
+        }
+    }
+
+    Ok(())
+}
+
+fn generate_site(src_path: &str, dst_path: &str, theme_path: &str) -> Result<(), error::Error> {
+    println!("Generating site...");
+    // Start timer
+    let now = Instant::now();
     // Register our template files as any file ending in .html in our templates
     // directory.
     let mut renderer = Tera::new(&format!("{}/**/*.html", theme_path))?; //TODO validate that path exists
@@ -89,22 +103,12 @@ fn main() -> Result<(), error::Error> {
     // Turn off autoescape for the HTML renderr since we trust our own content.
     renderer.autoescape_on(vec![]);
 
-    // Load contents from the file system
+    // Set up our filesystem handlers for our source and destination directories.
     let src = filesystem::Filesystem::new(path::PathBuf::from(src_path));
     let dst = filesystem::Filesystem::new(path::PathBuf::from(dst_path));
 
     let contents = src.read_all()?;
-    let references = contents
-        .iter()
-        .filter_map(|(_k, c)| match c {
-            Content::Article(a) => Some(a),
-            _ => None,
-        })
-        .fold(HashMap::new(), |mut m, a| {
-            let refs = links::extract(&contents, a);
-            m.insert(a.id.to_string(), refs);
-            m
-        });
+    let references = content::get_references(&contents);
 
     //
     // Traverse the contents again to write to file, now that
@@ -140,7 +144,7 @@ fn main() -> Result<(), error::Error> {
 
                 //
                 // Inbound references are the "backlinks" from other articles that get displayed
-                // at the bottom of each article (or wherever).
+                // at the bottom of each article (or wherever, depending on you theme of choice).
                 //
                 let inbound_references = content::get_inbound_references(&references, id)
                     .into_iter()
@@ -184,5 +188,9 @@ fn main() -> Result<(), error::Error> {
         }
     });
 
+    println!(
+        "Site generated in {} milliseconds",
+        now.elapsed().as_millis()
+    );
     Ok(())
 }

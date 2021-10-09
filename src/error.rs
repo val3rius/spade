@@ -7,6 +7,7 @@ pub enum Error {
   FromUtf8(std::string::FromUtf8Error),
   Yaml(serde_yaml::Error),
   Template(tera::Error),
+  Watch(notify::Error),
 }
 
 impl fmt::Display for Error {
@@ -42,5 +43,11 @@ impl std::convert::From<serde_yaml::Error> for Error {
 impl std::convert::From<tera::Error> for Error {
   fn from(error: tera::Error) -> Self {
     Error::Template(error)
+  }
+}
+
+impl std::convert::From<notify::Error> for Error {
+  fn from(error: notify::Error) -> Self {
+    Error::Watch(error)
   }
 }

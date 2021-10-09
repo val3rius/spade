@@ -1,5 +1,5 @@
 use crate::content::{get_article, get_asset};
-use crate::{Article, Content};
+use crate::content::{Article, Content};
 use regex::{Regex, RegexSet};
 use std::collections::HashMap;
 

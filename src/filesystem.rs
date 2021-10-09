@@ -1,4 +1,5 @@
-use crate::{error::Error, Article, Asset, Content};
+use crate::content::{Article, Asset, Content};
+use crate::error::Error;
 use std::collections::HashMap;
 use std::io::{Read, Write};
 use std::{fs, path};
