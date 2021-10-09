@@ -66,10 +66,10 @@ fn main() -> Result<(), error::Error> {
         .expect("Invalid destination value");
     let theme_path = matches.value_of("theme").expect("Invalid theme path");
 
-    // 3, 2, 1, let's jam...!
+    // Ok 3, 2, 1, let's jam...!
     generate_site(src_path, dst_path, theme_path)?;
 
-    // If the watch flag is set, we set up a notifier and loop indefinitely
+    // If the `watch` flag is set, we set up a notifier and loop indefinitely
     // to re-generate the site whenever there are file changes in our
     // source or theme directories.
     if matches.is_present("watch") {
@@ -98,7 +98,7 @@ fn generate_site(src_path: &str, dst_path: &str, theme_path: &str) -> Result<(),
     let now = Instant::now();
     // Register our template files as any file ending in .html in our templates
     // directory.
-    let mut renderer = Tera::new(&format!("{}/**/*.html", theme_path))?; //TODO validate that path exists
+    let mut renderer = Tera::new(&format!("{}/templates/**/*.html", theme_path))?; //TODO validate that path exists
 
     // Turn off autoescape for the HTML renderr since we trust our own content.
     renderer.autoescape_on(vec![]);
@@ -187,6 +187,25 @@ fn generate_site(src_path: &str, dst_path: &str, theme_path: &str) -> Result<(),
             }
         }
     });
+
+    // Move theme assets
+    // TODO ignore if the directory doesnt exist
+    let theme_assets =
+        filesystem::Filesystem::new(path::PathBuf::from(format!("{}/assets", theme_path))); //TODO validate path
+    let asset_files = theme_assets.read_all()?;
+    asset_files
+        .into_iter()
+        .filter_map(|(_k, c)| match c {
+            Content::Asset(a) => Some(a),
+            _ => None,
+        })
+        .for_each(|asset| {
+            std::io::copy(
+                &mut theme_assets.get_reader(&asset.src),
+                &mut dst.get_writer(&format!("/assets/{}", &asset.permalink)),
+            )
+            .unwrap();
+        });
 
     println!(
         "Site generated in {} milliseconds",

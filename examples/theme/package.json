@@ -1,0 +1,19 @@
+{
+  "name": "spade-default-theme",
+  "version": "1.0.0",
+  "description": "A simplistic theme for Spade",
+  "main": "index.js",
+  "author": "val3rius",
+  "license": "MIT",
+  "devDependencies": {
+    "autoprefixer": "^10.3.7",
+    "css-loader": "^6.4.0",
+    "cytoscape": "^3.19.1",
+    "eslint": "^7.32.0",
+    "mini-css-extract-plugin": "^2.4.2",
+    "postcss-loader": "^6.1.1",
+    "typescript": "^4.4.3",
+    "webpack": "^5.57.1",
+    "webpack-cli": "^4.9.0"
+  }
+}

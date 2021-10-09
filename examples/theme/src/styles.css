@@ -1,0 +1,146 @@
+/*@font-face {
+  font-family: "Garamond";
+  src: url("/garamond.ttf") format("truetype");
+}*/
+:root {
+  --border-color: #bbb;
+  --page-background-color: #f8f9fa;
+  --page-background-color--accent: #eee;
+  --text-color: #3d3d3d;
+  --link-color: #0000ff;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --border-color: #fff;
+    --page-background-color: #333;
+    --page-background-color--accent: #222;
+    --text-color: #fefefe;
+    --link-color: #61a5c2;
+  }
+}
+
+html,
+body {
+  margin: 0;
+  color: var(--text-color);
+  background-color: var(--page-background-color);
+  font-family: Garamond, Georgia, "Times New Roman", Times, serif;
+}
+h1,
+h2,
+h3,
+h4 {
+  font-variant-ligatures: common-ligatures;
+  font-weight: normal;
+}
+h1 {
+  font-size: 2rem;
+}
+h2 {
+  font-size: 1.8rem;
+}
+h3 {
+  font-size: 1.6rem;
+}
+p,
+li {
+  font-size: 1.5rem;
+  line-height: 1.5;
+}
+a {
+  color: var(--link-color);
+}
+
+code {
+  display: inline-block;
+  margin-bottom: -4px;
+  box-sizing: border-box;
+  overflow: auto;
+  color: #fff;
+  padding: 1px 4px;
+  font-size: 0.6em;
+  border-radius: 3px;
+  background: #222;
+}
+pre code {
+  padding: 20px;
+  margin: 0;
+  width: 100%;
+  font-size: 1rem;
+  border-radius: 6px;
+}
+
+table th {
+  text-align: left;
+}
+table th,
+table td {
+  padding: 10px;
+}
+
+img {
+  margin: 0 auto;
+  max-width: 100%;
+}
+
+.header {
+  margin: 40px auto 80px;
+}
+.header a {
+  font-size: 1.7rem;
+  display: inline-block;
+}
+.header a span {
+  color: var(--text-color);
+}
+.header small {
+  font-size: 1.1rem;
+  display: block;
+}
+.content {
+  margin: 0 auto 0;
+  padding-bottom: 40px;
+}
+.footer {
+  color: var(--text-color);
+  font-size: 1.2rem;
+  padding: 20px 0 20px;
+}
+.graph {
+  min-height: 400px;
+}
+.graph-wrapper {
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+.inbound-references {
+  margin: 40px auto 0;
+}
+.inbound-references ul {
+  list-style: none;
+  margin: 0 0 40px;
+  padding: 0;
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+}
+.inbound-references li {
+  flex-basis: 30%;
+  max-width: 30%;
+  flex-grow: 1;
+  display: inline-block;
+  border-top: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+}
+.inbound-references ul li a {
+  display: block;
+  padding: 40px 20px;
+}
+.inbound-references ul li a:hover {
+  background-color: var(--page-background-color--accent);
+}
+.wrapped {
+  margin: 0 auto;
+  max-width: 900px;
+  padding: 0 20px;
+}

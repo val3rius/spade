@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <link rel="stylesheet" href="/assets/styles.css">
+  <body>
+    <div class="wrapped">
+    <div class="header">
+      <a href="/"><span>val3rius.dev</span>/</a>
+      <small>notes on software and security</small>
+    </div>
+ 
+    <div class="content">
+      {{ content }}
+    </div>
+
+    {% if inbound_references %}
+    <div class="inbound-references">
+      <h3>pages linking to this one</h3>
+      <ul>
+        {% for title, permalink in inbound_references %}
+          <li><a href="{{ permalink }}">{{ title }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+ 
+  </div>
+  <div class="graph-wrapper">
+    <div class="graph" id="cy"></div>
+  </div>
+  <div class="footer"><div class="wrapped">Made with <a href="https://www.github.com/val3rius/spade/">Spade</a></div></div>
+  <script type="text/javascript">
+    var elements = {{ graph }};
+    var article_id = "{{ id }}";
+  </script> 
+  <script src="/assets/main.js"></script>
+</body>
+</html>
