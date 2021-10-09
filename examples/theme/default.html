@@ -102,6 +102,12 @@
       margin: 0 auto 0;
       padding-bottom: 40px;
     }
+    .graph {
+      margin: 0px auto 300px;
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      min-height: 400px;
+    }
     .inbound-references {
       margin: 40px auto 0;
     }
@@ -155,5 +161,84 @@
     {% endif %}
  
   </div>
-  </body>
+  <div class="graph" id="cy"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.19.1/cytoscape.min.js" integrity="sha512-REr7ZKldLo2Lx6UiQ6autPWZR+j4u1/7ElYsrcwFe3ZmT/TKXCF/vXqNP/d2BQ78k0tapdZFccpFkku9bwrS3w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script type="text/javascript">
+    var elements = {{ graph }};
+    var cy = cytoscape({ 
+      elements: elements, 
+      container: document.getElementById('cy'),
+      layout: {
+        name: 'cose',
+        animate: true,
+        animationThreshold: 500,
+        stop: function() {
+          var current_node = cy.$('node[id="{{ id }}"]');
+          cy.center(current_node);
+          current_node.neighborhood().nodes().map(function(ele){
+            ele.neighborhood().nodes().map(function(ele) {
+              ele.style({
+                'color': '#3d3d3d',
+                'background-color': '#bbb',
+            });
+            });
+            ele.style({
+                'color': '#3d3d3d',
+                'background-color': '#999',
+            });
+          });
+          current_node.style({
+            'background-color': '#0000ff'
+          })
+        },
+        fit: true,
+        idealEdgeLength: 50,
+        nodeOverlap: 6,
+        nodeRepulsion: 250,
+        componentSpacing: 100,
+        nodeRepulsion: 400000,
+        edgeElasticity: 100,
+        nestingFactor: 5,
+        gravity: 80,
+        numIter: 1000,
+      },
+      zoom: 1,
+      zoomingEnabled: false,
+      style: [
+        {
+          selector: 'edge',
+          style: {
+            'line-color': '#ccc',
+            'width': 1,
+            'curve-style': 'bezier'
+          }
+        },
+        {
+          selector: 'edge[source="{{ id }}"], edge[target="{{ id }}"]',
+          style: {
+            'line-color': '#3d3d3d',
+            'width': 1,
+            'curve-style': 'bezier'
+          }
+        },
+        {
+          selector: 'node',
+          style: {
+            'color': '#ccc',
+            'text-background-color': '#fff',
+            'background-color': '#ccc',
+            'label': 'data(id)',
+          }
+        },
+        {
+          selector: 'node[id="{{ id }}"]',
+          style: {
+            'color': '#3d3d3d',
+            'background-color': '#0000ff',
+          }
+        }
+      ]
+    });
+  </script>  
+</body>
 </html>

@@ -2,9 +2,11 @@ use crate::traits::{Reader, Writer};
 use clap::{App, Arg};
 use comrak::{markdown_to_html, ComrakOptions};
 use meta::Meta;
+use serde::Serialize;
 use std::collections::HashMap;
 use std::path;
 use tera::Tera;
+mod content;
 mod error;
 mod filesystem;
 mod links;
@@ -22,7 +24,7 @@ pub enum Content {
     Asset(Asset),
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub struct Article {
     id: String,
     permalink: String,
@@ -83,7 +85,7 @@ fn main() -> Result<(), error::Error> {
 
     // Register our template files as any file ending in .html in our templates
     // directory.
-    let mut renderer = Tera::new(&format!("{}/**/*.html", tmpl_path))?; //TODO validate that path exists
+    let mut renderer = Tera::new(&format!("{}/**/*.html", theme_path))?; //TODO validate that path exists
 
     // Turn off autoescape for the HTML renderr since we trust our own content.
     renderer.autoescape_on(vec![]);
@@ -142,9 +144,14 @@ fn main() -> Result<(), error::Error> {
                 // Set up rendering context.
                 //
                 let mut ctx = tera::Context::new();
+                ctx.insert("id", &article.id);
                 ctx.insert("meta", &article.meta);
                 ctx.insert("content", &article.content);
                 ctx.insert("inbound_references", &inbound_references);
+                ctx.insert(
+                    "graph",
+                    &content::cygate_graph(&repo.contents, &repo.reference_cache),
+                );
 
                 let rendered = renderer.render("default.html", &ctx).unwrap(); //TODO
 
