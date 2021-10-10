@@ -5,6 +5,9 @@
   "main": "index.js",
   "author": "val3rius",
   "license": "MIT",
+  "scripts": {
+    "dev": "./node_modules/.bin/webpack --watch"
+  },
   "devDependencies": {
     "@types/cytoscape": "^3.19.0",
     "autoprefixer": "^10.3.7",

@@ -25,7 +25,8 @@ var cy = cytoscape({
       });
       current_node.style({
         'background-color': '#3d3d3d'
-      })
+      });
+      
     },
     fit: true,
     idealEdgeLength: 50,
@@ -37,7 +38,7 @@ var cy = cytoscape({
     gravity: 80,
     numIter: 1000,
   },
-  zoom: 1,
+  zoom: 1.2,
   zoomingEnabled: false,
   style: [
     {
@@ -73,6 +74,20 @@ var cy = cytoscape({
         'color': '#3d3d3d',
         'background-color': '#3d3d3d',
       }
-    }
+    },
   ]
+});
+cy.on('tap', 'node', function(evt){
+  var node = evt.target;
+  window.location.href = node.data("url");
+});
+cy.on('mouseover', 'node', (event) => {
+  if(event.cy.container()) {
+    event.cy.container().style.cursor = 'pointer';
+  }
+});
+cy.on('mouseout', 'node', (event) => {
+  if(event.cy.container()) {
+    event.cy.container().style.cursor = 'default';
+  }
 });
