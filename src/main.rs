@@ -2,6 +2,7 @@ use crate::traits::{Reader, Writer};
 use clap::{App, Arg};
 use comrak::{markdown_to_html, ComrakOptions};
 use content::Content;
+use filesystem::Filesystem;
 use notify::{RecommendedWatcher, RecursiveMode, Watcher};
 use std::collections::HashMap;
 use std::path;
@@ -25,7 +26,7 @@ extern crate lazy_static;
 fn main() -> Result<(), error::Error> {
     let matches = App::new("Spade")
         .version("0.1.0-alpha")
-        .about("A tool for digital gardeners")
+        .about("digital gardening tool")
         .arg(
             Arg::with_name("source")
                 .long("source")
@@ -104,11 +105,12 @@ fn generate_site(src_path: &str, dst_path: &str, theme_path: &str) -> Result<(),
     renderer.autoescape_on(vec![]);
 
     // Set up our filesystem handlers for our source and destination directories.
-    let src = filesystem::Filesystem::new(path::PathBuf::from(src_path));
-    let dst = filesystem::Filesystem::new(path::PathBuf::from(dst_path));
+    let src = Filesystem::new(path::PathBuf::from(src_path));
+    let dst = Filesystem::new(path::PathBuf::from(dst_path));
 
     let contents = src.read_all()?;
     let references = content::get_references(&contents);
+    let graph = content::json_graph(&contents, &references);
 
     //
     // Traverse the contents again to write to file, now that
@@ -163,7 +165,6 @@ fn generate_site(src_path: &str, dst_path: &str, theme_path: &str) -> Result<(),
                 ctx.insert("meta", &article.meta);
                 ctx.insert("content", &article.content);
                 ctx.insert("inbound_references", &inbound_references);
-                ctx.insert("graph", &content::json_graph(&contents, &references));
 
                 let rendered = renderer.render("default.html", &ctx).unwrap(); //TODO
 
@@ -190,8 +191,7 @@ fn generate_site(src_path: &str, dst_path: &str, theme_path: &str) -> Result<(),
 
     // Move theme assets
     // TODO ignore if the directory doesnt exist
-    let theme_assets =
-        filesystem::Filesystem::new(path::PathBuf::from(format!("{}/assets", theme_path))); //TODO validate path
+    let theme_assets = Filesystem::new(path::PathBuf::from(format!("{}/assets", theme_path))); //TODO validate path
     let asset_files = theme_assets.read_all()?;
     asset_files
         .into_iter()
@@ -206,6 +206,11 @@ fn generate_site(src_path: &str, dst_path: &str, theme_path: &str) -> Result<(),
             )
             .unwrap();
         });
+
+    // Write graph.json
+    let mut w = dst.get_writer("/assets/graph.json");
+    w.write_all(graph.as_bytes())
+        .expect("Unable to write graph.json to destination");
 
     println!(
         "Site generated in {} milliseconds",

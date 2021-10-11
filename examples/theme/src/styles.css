@@ -1,7 +1,7 @@
-/*@font-face {
+/* @font-face {
   font-family: "Garamond";
-  src: url("/garamond.ttf") format("truetype");
-}*/
+  src: url("/assets/garamond.ttf") format("truetype");
+} */
 :root {
   --border-color: #bbb;
   --page-background-color: #f8f9fa;

@@ -7,7 +7,7 @@ Spade is a static site generator with an emphasis on zettelkasten style writing.
 ## Features (so far)
 
 - Internal [[links]] are automatically resolved (see examples/content)
-- A graph structure of all internal links are produced to navigate the site/garden
+- A graph structure of all internal links are produced to navigate the site
 
 ## Usage (--help)
 
