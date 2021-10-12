@@ -2,7 +2,7 @@ target/release/spade:
 	cargo build --release
 
 lint-rust:
-	cargo clippy --fix
+	cargo clippy --fix --allow-dirty --allow-staged
 .PHONY: lint-rust
 
 lint-js:

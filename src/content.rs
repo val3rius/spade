@@ -81,10 +81,7 @@ pub fn json_graph(
             let mut m = Map::new();
             let mut data = Map::new();
             data.insert("id".to_string(), Value::String(a.id.clone()));
-            data.insert(
-                "url".to_string(),
-                Value::String(a.permalink.clone().to_string()),
-            );
+            data.insert("url".to_string(), Value::String(a.permalink.clone()));
             m.insert("data".to_string(), Value::Object(data));
             Value::Object(m)
         })

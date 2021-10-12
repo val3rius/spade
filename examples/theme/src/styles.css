@@ -1,7 +1,7 @@
 :root {
   --border-color: #bbb;
   --page-background-color: #f8f9fa;
-  --page-background-color--accent: #eee;
+  --page-background-color-accent: #eee;
   --text-color: #3d3d3d;
   --link-color: #0000ff;
 }
@@ -9,7 +9,7 @@
   :root {
     --border-color: #fff;
     --page-background-color: #333;
-    --page-background-color--accent: #222;
+    --page-background-color-accent: #222;
     --text-color: #fefefe;
     --link-color: #61a5c2;
   }
@@ -67,12 +67,29 @@ pre code {
   border-radius: 6px;
 }
 
+table {
+  border: 1px solid var(--border-color);
+  width: 100%;
+  font-size: 1.2rem;
+  border-radius: 3px;
+}
 table th {
   text-align: left;
+  margin: 0;
+  border-bottom: 1px solid var(--border-color);
+}
+table tr:nth-child(even) td {
+  background-color: var(--page-background-color-accent);
 }
 table th,
 table td {
+  margin: 0;
   padding: 10px;
+  border-left: 1px solid var(--border-color);
+}
+table th:first-child,
+table td:first-child {
+  border-left: none;
 }
 
 img {
@@ -134,7 +151,7 @@ img {
   padding: 40px 20px;
 }
 .inbound-references ul li a:hover {
-  background-color: var(--page-background-color--accent);
+  background-color: var(--page-background-color-accent);
 }
 .tags {
   margin: 0 auto 20px;

@@ -220,6 +220,14 @@ fn generate_site(src_path: &str, dst_path: &str, theme_path: &str) -> Result<(),
     w.write_all(graph.as_bytes())
         .expect("Unable to write graph.json to destination");
 
+    // Write the 404 page
+    let mut w = dst.get_writer("/404.html");
+    let rendered_404 = renderer
+        .render("404.html", &tera::Context::default())
+        .unwrap();
+    w.write_all(rendered_404.as_bytes())
+        .expect("Unable to write 404.html to destination");
+
     // Render and write tags pages
     tags.iter().for_each(|(tag, article_ids)| {
         let mut ctx = tera::Context::new();
@@ -231,6 +239,7 @@ fn generate_site(src_path: &str, dst_path: &str, theme_path: &str) -> Result<(),
                 m
             });
 
+        ctx.insert("tag", &tag);
         ctx.insert("links", &link_map);
         let rendered = renderer.render("tag.html", &ctx).unwrap(); //TODO
         let mut w = dst.get_writer(&format!("/tags/{}.html", tag));
