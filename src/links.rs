@@ -32,7 +32,7 @@ pub fn replace(
             if let Some(asset) = get_asset(contents, &cap[1]) {
                 content = content.replace(
                     &format!("![[{}]]", &cap[1]),
-                    &format!("![Image](/{})", asset.permalink),
+                    &format!("![Image]({})", asset.permalink),
                 );
             }
         });
@@ -44,7 +44,7 @@ pub fn replace(
             if let Some(article) = get_article(contents, &cap[1]) {
                 content = content.replace(
                     &format!("[[{}|{}]]", &cap[1], &cap[2]),
-                    &format!("[{}](/{})", &cap[2], article.permalink),
+                    &format!("[{}]({})", &cap[2], article.permalink),
                 );
             }
         });
@@ -56,7 +56,7 @@ pub fn replace(
             if let Some(article) = get_article(contents, &cap[1]) {
                 content = content.replace(
                     &format!("[[{}]]", &cap[1]),
-                    &format!("[{}](/{})", &cap[1], article.permalink),
+                    &format!("[{}]({})", &cap[1], article.permalink),
                 );
             }
         });

@@ -10,33 +10,22 @@
   <body>
     <div class="wrapped">
     <div class="header">
-      <a href="/"><span>val3rius.dev</span>/notes</a>
+      <a href="/"><span>val3rius.dev</span>/</a>
       <small>notes on software and security</small>
     </div>
  
     <div class="content" id="content-container">
-      {{ content }}
-    </div>
-
-    {% if tags %}
-    <div class="tags">
-      <h3>Filed under</h3>
       <ul>
-      {% for tag in tags %}
-        <li><a class="tag" href="/tags/{{ tag }}">#{{ tag }}</a></li>
+      {% for title, url in links %}
+        <li><a href="{{ url }}">{{ title }}</a></li>
       {% endfor %}
       </ul>
     </div>
-    {% endif %}
-
   </div>
   <div class="graph-wrapper">
     <div class="graph" id="cy"></div>
   </div>
   <div class="footer"><div class="wrapped">Made with <a href="https://www.github.com/val3rius/spade/">Spade</a></div></div>
-  <script type="text/javascript">
-    var article_id = "{{ id }}";
-  </script> 
   <script defer src="/assets/main.js"></script>
 </body>
 </html>

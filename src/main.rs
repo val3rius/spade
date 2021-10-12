@@ -4,6 +4,7 @@ use comrak::{markdown_to_html, ComrakOptions};
 use content::Content;
 use filesystem::Filesystem;
 use notify::{RecommendedWatcher, RecursiveMode, Watcher};
+use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 use std::path;
 use std::sync::mpsc::channel;
@@ -110,13 +111,14 @@ fn generate_site(src_path: &str, dst_path: &str, theme_path: &str) -> Result<(),
 
     let contents = src.read_all()?;
     let references = content::get_references(&contents);
+    let mut tags: HashMap<String, Vec<String>> = HashMap::new();
     let graph = content::json_graph(&contents, &references);
 
     //
     // Traverse the contents again to write to file, now that
     // all internal links have been resolved.
     //
-    contents.iter().for_each(|(id, content)| {
+    contents.iter().for_each(|(_id, content)| {
         match content {
             //
             // For Markdown files, we pass the content to the templating engine,
@@ -135,6 +137,25 @@ fn generate_site(src_path: &str, dst_path: &str, theme_path: &str) -> Result<(),
                 article.meta = meta;
                 article.content = content;
 
+                let mut article_tags = vec![];
+
+                // Update the tag lookup map
+                if let Some(m) = article.meta.clone() {
+                    if let Some(t) = m.tags {
+                        t.into_iter().for_each(|tag| {
+                            match tags.entry(tag.clone()) {
+                                Entry::Vacant(e) => {
+                                    e.insert(vec![article.id.clone()]);
+                                }
+                                Entry::Occupied(mut e) => {
+                                    e.get_mut().push(article.id.clone());
+                                }
+                            };
+                            article_tags.push(tag);
+                        });
+                    }
+                }
+
                 //
                 // Render HTML from Markdown
                 //
@@ -145,26 +166,13 @@ fn generate_site(src_path: &str, dst_path: &str, theme_path: &str) -> Result<(),
                 article.content = markdown_to_html(&article.content, &comrak_opts);
 
                 //
-                // Inbound references are the "backlinks" from other articles that get displayed
-                // at the bottom of each article (or wherever, depending on you theme of choice).
-                //
-                let inbound_references = content::get_inbound_references(&references, id)
-                    .into_iter()
-                    .fold(HashMap::new(), |mut m, id| {
-                        if let Some(referencing_article) = content::get_article(&contents, &id) {
-                            m.insert(id, format!("/{}", referencing_article.permalink));
-                        }
-                        m
-                    });
-
-                //
                 // Set up rendering context.
                 //
                 let mut ctx = tera::Context::new();
                 ctx.insert("id", &article.id);
                 ctx.insert("meta", &article.meta);
                 ctx.insert("content", &article.content);
-                ctx.insert("inbound_references", &inbound_references);
+                ctx.insert("tags", &article_tags);
 
                 let rendered = renderer.render("default.html", &ctx).unwrap(); //TODO
 
@@ -172,7 +180,7 @@ fn generate_site(src_path: &str, dst_path: &str, theme_path: &str) -> Result<(),
                 // Set up a writer for our output file and write the rendered
                 // content to it.
                 //
-                let mut w = dst.get_writer(&article.permalink);
+                let mut w = dst.get_writer(&format!("{}.html", &article.permalink));
                 w.write_all(rendered.as_bytes())
                     .expect("Unable to write to destination");
             }
@@ -211,6 +219,24 @@ fn generate_site(src_path: &str, dst_path: &str, theme_path: &str) -> Result<(),
     let mut w = dst.get_writer("/assets/graph.json");
     w.write_all(graph.as_bytes())
         .expect("Unable to write graph.json to destination");
+
+    // Render and write tags pages
+    tags.iter().for_each(|(tag, article_ids)| {
+        let mut ctx = tera::Context::new();
+        let link_map: HashMap<String, String> =
+            article_ids.iter().fold(HashMap::new(), |mut m, id| {
+                if let Some(article) = content::get_article(&contents, id) {
+                    m.insert((&article.id).to_string(), (&article.permalink).to_string());
+                }
+                m
+            });
+
+        ctx.insert("links", &link_map);
+        let rendered = renderer.render("tag.html", &ctx).unwrap(); //TODO
+        let mut w = dst.get_writer(&format!("/tags/{}.html", tag));
+        w.write_all(rendered.as_bytes())
+            .expect("Unable to write graph.json to destination");
+    });
 
     println!(
         "Site generated in {} milliseconds",

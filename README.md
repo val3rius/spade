@@ -2,12 +2,7 @@
 
 A digital gardening tool
 
-Spade is a static site generator with an emphasis on zettelkasten style writing.
-
-## Features (so far)
-
-- Internal [[links]] are automatically resolved (see examples/content)
-- A graph structure of all internal links are produced to navigate the site
+Spade is a static site generator with an emphasis on zettelkasten style writing. It's intended to primarily drive my own personal site, and is therefore until further notice tightly coupled to that specific use case (e.g. the "default theme" may contain traces of my site, configuration options are low priority, et cetera).
 
 ## Usage (--help)
 

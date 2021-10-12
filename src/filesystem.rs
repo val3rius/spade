@@ -134,9 +134,10 @@ pub fn id_from_path(path: &std::path::Path) -> String {
 pub fn permalink_from_path(path: &std::path::Path) -> String {
     let mut path = path.to_path_buf();
     if let Filetype::Markdown = Filetype::from(&path) {
-        path.set_extension("html");
+        path.set_extension("");
     }
-    slugify_path(&path).to_str().unwrap_or("").to_string()
+    let slugified = slugify_path(&path).to_str().unwrap_or("").to_string();
+    format!("/{}", slugified)
 }
 
 // slugify_path takes a PathBuf and makes it URL friendly

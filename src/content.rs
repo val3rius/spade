@@ -67,16 +67,6 @@ pub fn get_references(contents: &HashMap<String, Content>) -> HashMap<String, Ve
         })
 }
 
-pub fn get_inbound_references(refs: &HashMap<String, Vec<String>>, id: &str) -> Vec<String> {
-    let mut inbound = vec![];
-    for (key, value) in refs.iter() {
-        if value.contains(&id.to_string()) {
-            inbound.push(key.to_owned());
-        }
-    }
-    inbound
-}
-
 pub fn json_graph(
     nodes: &HashMap<String, Content>,
     edges: &HashMap<String, Vec<String>>,
@@ -93,7 +83,7 @@ pub fn json_graph(
             data.insert("id".to_string(), Value::String(a.id.clone()));
             data.insert(
                 "url".to_string(),
-                Value::String(format!("/{}", a.permalink.clone())),
+                Value::String(a.permalink.clone().to_string()),
             );
             m.insert("data".to_string(), Value::Object(data));
             Value::Object(m)

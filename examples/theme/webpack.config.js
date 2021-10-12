@@ -19,6 +19,11 @@ module.exports = {
           "css-loader", "postcss-loader",
           ],
       },
+      {
+        test: /\.ts?$/,
+        use: "babel-loader",
+        exclude: /node_modules/,
+      },
     ]
   },
   plugins: [
