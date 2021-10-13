@@ -1,10 +1,10 @@
 :root {
   --border-color: #bbb;
-  --page-background-color: #f8f9fa;
+  --page-background-color: #fdfdfd;
   --page-background-color-accent: #eee;
   --text-color: #3d3d3d;
   --link-color: #0000ff;
-  --icon-external-link: url("data:image/svg+xml,      <svg xmlns=\"http://www.w3.org/2000/svg\"  viewBox=\"0 0 20 20\">         <g style=\"stroke:rgb%2800,00,255%29;stroke-width:1\">           <line x1=\"5\" y1=\"5\" x2=\"5\" y2=\"14\" />           <line x1=\"14\" y1=\"9\" x2=\"14\" y2=\"14\" />           <line x1=\"5\" y1=\"14\" x2=\"14\" y2=\"14\" />           <line x1=\"5\" y1=\"5\" x2=\"9\" y2=\"5\"  />           <line x1=\"10\" y1=\"2\" x2=\"17\" y2=\"2\"  />           <line x1=\"17\" y1=\"2\" x2=\"17\" y2=\"9\" />           <line x1=\"10\" y1=\"9\" x2=\"17\" y2=\"2\" style=\"stroke-width:1.5\" />         </g>       </svg>");
+  --icon-external-link: url("data:image/svg+xml,       <svg xmlns=\"http://www.w3.org/2000/svg\"  viewBox=\"0 0 20 20\">         <g style=\"stroke:rgb%2800,00,255%29;stroke-width:1\">           <line x1=\"5\" y1=\"5\" x2=\"5\" y2=\"14\" />           <line x1=\"14\" y1=\"9\" x2=\"14\" y2=\"14\" />           <line x1=\"5\" y1=\"14\" x2=\"14\" y2=\"14\" />           <line x1=\"5\" y1=\"5\" x2=\"9\" y2=\"5\"  />           <line x1=\"10\" y1=\"2\" x2=\"17\" y2=\"2\"  />           <line x1=\"17\" y1=\"2\" x2=\"17\" y2=\"9\" />           <line x1=\"10\" y1=\"9\" x2=\"17\" y2=\"2\" style=\"stroke-width:1.5\" />         </g>       </svg>");
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -29,7 +29,6 @@ h3,
 h4 {
   font-variant-ligatures: common-ligatures;
   font-weight: normal;
-  margin-bottom: 0;
 }
 h1 {
   font-size: 2rem;
@@ -39,6 +38,7 @@ h2 {
 }
 h3 {
   font-size: 1.6rem;
+  margin-bottom: 0;
 }
 p,
 li {
@@ -55,7 +55,10 @@ a[href*="//"]::after
   background-position-y: 0.2em;
   padding-right: 1em;
 }
-
+blockquote {
+  border-left: 5px solid var(--border-color);
+  padding-left: 20px;
+}
 code {
   display: inline-block;
   margin-bottom: -4px;
@@ -74,12 +77,12 @@ pre code {
   font-size: 1rem;
   border-radius: 6px;
 }
-
 table {
   border: 1px solid var(--border-color);
   width: 100%;
   font-size: 1.2rem;
   border-radius: 3px;
+  font-family: Arial, Helvetica, sans-serif;
 }
 table th {
   text-align: left;
@@ -99,14 +102,17 @@ table th:first-child,
 table td:first-child {
   border-left: none;
 }
-
 img {
   margin: 0 auto;
   max-width: 100%;
 }
-
+ul,
+li {
+  margin: 0;
+}
 .header {
   margin: 40px auto 80px;
+  font-family: Arial, Helvetica, sans-serif;
 }
 .header a {
   font-size: 1.7rem;
@@ -123,10 +129,32 @@ img {
   margin: 0 auto 0;
   padding-bottom: 40px;
 }
+.cols {
+  display: flex;
+  flex-direction: row;
+}
+.cols > div {
+  flex: 1;
+}
+.cols .half {
+  flex-basis: 50%;
+}
+.cols .third {
+  flex-basis: 30%;
+}
+.cols .fourth {
+  flex-basis: 25%;
+}
 .footer {
   color: var(--text-color);
   font-size: 1.2rem;
-  padding: 100px 0 100px;
+}
+.footer .footer-block {
+  flex-basis: 25%;
+  margin: 40px 40px 40px 0;
+}
+.footer .footer-block:last-child {
+  margin-right: 0;
 }
 .graph {
   min-height: 500px;
@@ -160,6 +188,9 @@ img {
 }
 .inbound-references ul li a:hover {
   background-color: var(--page-background-color-accent);
+}
+.margin-bottom {
+  margin-bottom: 40px;
 }
 .tags {
   margin: 0 auto 20px;

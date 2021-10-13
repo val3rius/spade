@@ -14,13 +14,16 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
+        include: path.resolve(__dirname, 'src'),
         use: [
           MiniCssExtractPlugin.loader,
           "css-loader", "postcss-loader",
-          ],
+        ],
+        exclude: /node_modules/,
       },
       {
         test: /\.ts?$/,
+        include: path.resolve(__dirname, 'src'),
         use: "babel-loader",
         exclude: /node_modules/,
       },
