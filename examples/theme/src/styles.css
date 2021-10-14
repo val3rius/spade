@@ -4,26 +4,16 @@
   --page-background-color-accent: #eee;
   --text-color: #3d3d3d;
   --link-color: #0000ff;
-  --icon-external-link: url('data:image/svg+xml, \
-      <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 20 20"> \
-        <g style="stroke:rgb(00,00,255);stroke-width:1"> \
-          <line x1="5" y1="5" x2="5" y2="14" /> \
-          <line x1="14" y1="9" x2="14" y2="14" /> \
-          <line x1="5" y1="14" x2="14" y2="14" /> \
-          <line x1="5" y1="5" x2="9" y2="5"  /> \
-          <line x1="10" y1="2" x2="17" y2="2"  /> \
-          <line x1="17" y1="2" x2="17" y2="9" /> \
-          <line x1="10" y1="9" x2="17" y2="2" style="stroke-width:1.5" /> \
-        </g> \
-      </svg>');
+  --icon-external-link: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 20 20"><g style="stroke:rgb(00,00,255);stroke-width:1"><line x1="5" y1="5" x2="5" y2="14" /><line x1="14" y1="9" x2="14" y2="14" /><line x1="5" y1="14" x2="14" y2="14" /><line x1="5" y1="5" x2="9" y2="5"  /><line x1="10" y1="2" x2="17" y2="2"  /><line x1="17" y1="2" x2="17" y2="9" /><line x1="10" y1="9" x2="17" y2="2" style="stroke-width:1.5" /></g></svg>');
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --border-color: #fff;
-    --page-background-color: #333;
+    --page-background-color: rgb(28, 28, 29);
     --page-background-color-accent: #222;
-    --text-color: #fefefe;
-    --link-color: #61a5c2;
+    --text-color: #d3d3d3;
+    --link-color: #6875ec;
+    --icon-external-link: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 20 20"><g style="stroke:rgb(104,117,255);stroke-width:1"><line x1="5" y1="5" x2="5" y2="14" /><line x1="14" y1="9" x2="14" y2="14" /><line x1="5" y1="14" x2="14" y2="14" /><line x1="5" y1="5" x2="9" y2="5"  /><line x1="10" y1="2" x2="17" y2="2"  /><line x1="17" y1="2" x2="17" y2="9" /><line x1="10" y1="9" x2="17" y2="2" style="stroke-width:1.5" /></g></svg>');
   }
 }
 
@@ -33,6 +23,7 @@ body {
   color: var(--text-color);
   background-color: var(--page-background-color);
   font-family: Garamond, Georgia, "Times New Roman", Times, serif;
+  font-size: 1.2rem;
 }
 h1,
 h2,
@@ -42,22 +33,23 @@ h4 {
   font-weight: normal;
 }
 h1 {
-  font-size: 2rem;
+  font-size: 1.9em;
 }
 h2 {
-  font-size: 1.8rem;
+  font-size: 1.5em;
 }
 h3 {
-  font-size: 1.6rem;
+  font-size: 1.2em;
   margin-bottom: 0;
 }
 p,
 li {
-  font-size: 1.5rem;
+  font-size: 1em;
   line-height: 1.5;
 }
 a {
   color: var(--link-color);
+  position: relative;
 }
 a[href*="//"]::after
 {
@@ -65,6 +57,36 @@ a[href*="//"]::after
   background: no-repeat var(--icon-external-link);
   background-position-y: 0.2em;
   padding-right: 1em;
+}
+a .tooltip {
+  position: absolute;
+  -webkit-box-shadow: -5px 0px 19px 0px rgba(145, 145, 145, 0.3);
+  box-shadow: -5px 0px 19px 0px rgba(145, 145, 145, 0.3);
+  display: none;
+  z-index: 10;
+  font-size: 1rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--page-background-color);
+  color: var(--text-color);
+  left: 50%;
+  top: -20px;
+  border-radius: 3px;
+  padding: 0px 20px 20px;
+  width: 400px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+a:hover .tooltip {
+  display: block;
+}
+a .tooltip h1 {
+  font-size: 1.3em;
+  line-height: 1em;
+  margin: 20px 0 10px;
+}
+a .tooltip h2,
+a .tooltip h3 {
+  font-size: 1.1em;
 }
 blockquote {
   border-left: 5px solid var(--border-color);
@@ -77,7 +99,7 @@ code {
   overflow: auto;
   color: #fff;
   padding: 1px 4px;
-  font-size: 0.6em;
+  font-size: 0.8em;
   border-radius: 3px;
   background: #222;
 }
@@ -85,13 +107,13 @@ pre code {
   padding: 20px;
   margin: 0;
   width: 100%;
-  font-size: 1rem;
+  font-size: 0.8em;
   border-radius: 6px;
 }
 table {
   border: 1px solid var(--border-color);
   width: 100%;
-  font-size: 1.2rem;
+  font-size: 1em;
   border-radius: 3px;
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -126,14 +148,14 @@ li {
   font-family: Arial, Helvetica, sans-serif;
 }
 .header a {
-  font-size: 1.7rem;
+  font-size: 1.3em;
   display: inline-block;
 }
 .header a span {
   color: var(--text-color);
 }
 .header small {
-  font-size: 1.1rem;
+  font-size: 0.9em;
   display: block;
 }
 .content {
@@ -158,7 +180,7 @@ li {
 }
 .footer {
   color: var(--text-color);
-  font-size: 1.2rem;
+  font-size: 1.2em;
 }
 .footer .footer-block {
   flex-basis: 25%;
@@ -218,10 +240,10 @@ li {
 }
 .tags .tag {
   display: inline-block;
-  background: #3333ff;
+  background: var(--link-color);
   padding: 2px 10px;
-  font-size: 1rem;
-  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.8em;
+  font-family: monospace;
   text-decoration: none;
   color: #fff;
   margin-right: 5px;

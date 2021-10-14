@@ -2,7 +2,7 @@
 
  {% block content %}
     <div class="content" id="content-container">
-      <article>
+      <article class="article">
         {{ content }}
       </article>
     </div>
@@ -12,7 +12,7 @@
       <h3>Filed under</h3>
       <ul>
       {% for tag in tags %}
-        <li><a class="tag" href="/tags/{{ tag }}">#{{ tag }}</a></li>
+        <li><a class="tag" href="/tags/{{ tag }}"># {{ tag }}</a></li>
       {% endfor %}
       </ul>
     </div>

@@ -11,18 +11,24 @@ const graph = (elements, currentID: string) => {
       stop() {
         const currentNode = cy.$(`node[id="${currentID}"]`);
         cy.center(currentNode);
-        currentNode.neighborhood().nodes().forEach((ele) => {
-          ele.neighborhood().nodes().forEach((ele) => {
+        currentNode
+          .neighborhood()
+          .nodes()
+          .forEach((ele) => {
+            ele
+              .neighborhood()
+              .nodes()
+              .forEach((nEle) => {
+                nEle.style({
+                  color: '#3d3d3d',
+                  'background-color': '#bbb',
+                });
+              });
             ele.style({
               color: '#3d3d3d',
-              'background-color': '#bbb',
+              'background-color': '#999',
             });
           });
-          ele.style({
-            color: '#3d3d3d',
-            'background-color': '#999',
-          });
-        });
         currentNode.style({
           'background-color': '#3d3d3d',
         });
