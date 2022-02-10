@@ -1,5 +1,5 @@
+use crate::frontmatter::Frontmatter;
 use crate::links;
-use crate::meta::Meta;
 use serde::Serialize;
 use serde_json::{Map, Value};
 use std::collections::HashMap;
@@ -17,7 +17,7 @@ pub struct Article {
     pub id: String,
     pub permalink: String,
     pub src: String,
-    pub meta: Option<Meta>,
+    pub meta: Option<Frontmatter>,
     pub content: String,
 }
 #[derive(Debug)]

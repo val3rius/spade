@@ -1,28 +1,30 @@
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
+/**
+ * Spade default theme entrypoint.
+ * Features/responsibilities:
+ *
+ * - display a graph of connected articles
+ *
+ * - parse internal links and display tooltips with previews
+ *   on hover
+ */
+import "core-js/stable"
+import "regenerator-runtime/runtime"
 
-import graph from './graph';
-import './styles.css';
+import graph from "./graph"
+import create_tooltip from "./tooltips"
+import "./styles.css"
 
-window.addEventListener('DOMContentLoaded', () => {
-  fetch('/assets/graph.json')
+// article_id may be supplied inline within the various article pages
+declare global {
+  interface Window {
+    article_id?: string
+  }
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  fetch("/assets/graph.json")
     .then((data) => data.json())
-    .then((data) => graph(data, window.article_id));
+    .then((data) => graph(data, window.article_id || ""))
 
-  document.querySelectorAll('#main a[href^="/"]').forEach((element) => element.addEventListener(
-    'mouseenter',
-    async (e) => {
-      const html = await fetch(e?.target?.href).then((result) => result.text());
-      const doc = new DOMParser().parseFromString(html, 'text/html');
-      const article = doc.querySelector('#main .article');
-      if (article) {
-        const tooltip = document.createElement('div').appendChild(article);
-        tooltip.className = 'tooltip';
-        e?.target?.appendChild(tooltip);
-      }
-    },
-    {
-      once: true,
-    },
-  ));
-});
+  document.querySelectorAll('#main a[href^="/"]').forEach(create_tooltip)
+})
