@@ -10,6 +10,8 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
 pub struct Frontmatter {
     //
+    pub title: Option<String>,
+    //
     pub tags: Option<Vec<String>>,
     //
     pub template: Option<String>,
@@ -55,6 +57,7 @@ unsupported_key:
             fm.unwrap(),
             super::Frontmatter {
                 tags: Some(vec!["some-tag".to_string()]),
+                title: None,
                 template: Some("main".to_string()),
                 created_at: None,
                 updated_at: None,

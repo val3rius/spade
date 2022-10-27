@@ -1,4 +1,4 @@
-use crate::content::{Article, Asset, Content};
+use crate::content::{Article, ArticleContent, Asset, Content};
 use crate::error::Error;
 use std::collections::HashMap;
 use std::io::{Read, Write};
@@ -32,7 +32,8 @@ impl crate::traits::Reader for Filesystem {
                             permalink: permalink_from_path(&path),
                             src: path.to_str().unwrap().to_string(),
                             meta: None,
-                            content: String::from_utf8_lossy(&buf).into(),
+                            raw: String::from_utf8_lossy(&buf).into(),
+                            content: None,
                         }),
                     );
                 } else {
