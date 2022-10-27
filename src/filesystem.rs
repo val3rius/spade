@@ -1,4 +1,4 @@
-use crate::content::{Article, ArticleContent, Asset, Content};
+use crate::content::{Article, Asset, Content};
 use crate::error::Error;
 use std::collections::HashMap;
 use std::io::{Read, Write};
@@ -27,14 +27,14 @@ impl crate::traits::Reader for Filesystem {
                     let id = id_from_path(&path);
                     hm.insert(
                         id.clone(),
-                        Content::Article(Article {
+                        Content::Article(Box::new(Article {
                             id,
                             permalink: permalink_from_path(&path),
                             src: path.to_str().unwrap().to_string(),
                             meta: None,
                             raw: String::from_utf8_lossy(&buf).into(),
                             content: None,
-                        }),
+                        })),
                     );
                 } else {
                     let id = id_from_path(&path);
@@ -60,7 +60,7 @@ impl crate::traits::Reader for Filesystem {
 impl crate::traits::Writer for Filesystem {
     fn get_writer(&self, permalink: &str) -> Box<dyn Write> {
         let path =
-            std::path::PathBuf::from(format!("{}/{}", self.path.to_str().unwrap(), &(*permalink)));
+            std::path::PathBuf::from(format!("{}/{}", self.path.to_str().unwrap(), permalink));
         if let Some(parent) = path.parent() {
             std::fs::create_dir_all(parent).unwrap();
         }

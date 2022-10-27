@@ -1,10 +1,6 @@
 use crate::frontmatter::Frontmatter;
 use crate::links;
-use comrak::{
-    format_html,
-    nodes::{AstNode, NodeCode, NodeLink, NodeValue},
-    parse_document, Arena, ComrakOptions,
-};
+use comrak::{format_html, nodes::NodeValue, parse_document, Arena, ComrakOptions};
 use serde::Serialize;
 use serde_json::{Map, Value};
 use std::collections::HashMap;
@@ -13,7 +9,7 @@ use std::collections::HashMap;
 /// from our source to our destination.
 #[derive(Debug)]
 pub enum Content {
-    Article(Article),
+    Article(Box<Article>),
     Asset(Asset),
 }
 
@@ -87,7 +83,7 @@ pub fn parse_raw(raw: &str, allow_html: bool) -> Option<ArticleContent> {
                             "{}<a id=\"{}\">{}</a>",
                             content.body,
                             slug::slugify(&heading),
-                            String::from_utf8_lossy(&html).to_string()
+                            String::from_utf8_lossy(&html)
                         );
                     }
                 }
@@ -107,21 +103,13 @@ pub fn parse_raw(raw: &str, allow_html: bool) -> Option<ArticleContent> {
                 }
                 let mut html = vec![];
                 format_html(node, &comrak_opts, &mut html).unwrap();
-                content.body = format!(
-                    "{}{}",
-                    content.body,
-                    String::from_utf8_lossy(&html).to_string()
-                );
+                content.body = format!("{}{}", content.body, String::from_utf8_lossy(&html));
                 continue;
             }
             _ => {
                 let mut html = vec![];
                 format_html(node, &comrak_opts, &mut html).unwrap();
-                content.body = format!(
-                    "{}{}",
-                    content.body,
-                    String::from_utf8_lossy(&html).to_string()
-                );
+                content.body = format!("{}{}", content.body, String::from_utf8_lossy(&html));
                 continue;
             }
         }

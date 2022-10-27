@@ -8,7 +8,6 @@ pub enum Error {
     Yaml(serde_yaml::Error),
     Template(tera::Error),
     Watch(notify::Error),
-    Unknown,
 }
 
 impl fmt::Display for Error {

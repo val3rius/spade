@@ -1,6 +1,5 @@
 use crate::traits::{Reader, Writer};
 use clap::{App, Arg};
-use comrak::{markdown_to_html, ComrakOptions};
 use content::Content;
 use filesystem::Filesystem;
 use notify::{RecommendedWatcher, RecursiveMode, Watcher};
@@ -244,7 +243,7 @@ fn generate_site(
         let link_map: HashMap<String, String> =
             article_ids.iter().fold(HashMap::new(), |mut m, id| {
                 if let Some(article) = content::get_article(&contents, id) {
-                    m.insert((&article.id).to_string(), (&article.permalink).to_string());
+                    m.insert((article.id).to_string(), (article.permalink).to_string());
                 }
                 m
             });

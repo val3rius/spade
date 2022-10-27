@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 
 /// Frontmatter
 ///
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
+#[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize, Default)]
 pub struct Frontmatter {
     //
     pub title: Option<String>,
