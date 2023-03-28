@@ -8,7 +8,7 @@ edition = "2018"
 [dependencies]
 chrono = { version = "0.4", features = ["serde"] }
 clap = "2.33.3"
-comrak = "0.12.1"
+comrak = "0.17.0"
 lazy_static = "1.4.0"
 notify = "4.0.16"
 regex = "1"
